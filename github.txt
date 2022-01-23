@@ -1,0 +1,8 @@
+First time
+git clone http://
+close
+
+git add ./*
+git commit -m "xxx"
+git push
+
