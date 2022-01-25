@@ -1,65 +1,41 @@
 belfastdata <- read.csv("8096data.csv", header = TRUE, sep = ",")
-# lm. belfastdata<-lm(humidity~PM2.5+NO2+O3+temperature.,data = belfastdata)
-# lm. belfastdata$coefficients
+boxdata <- read.csv("box.csv", header = TRUE, sep = ",")
 
-# modelhumidity <- lm(humidity~PM2.5 + NO2 + O3 + temperature, data = belfastdata)
+
 modelPM2.5 <- lm(PM2.5~humidity + NO2 + O3 + temperature, data = belfastdata)
 modelNO2 <- lm(NO2~PM2.5 + humidity + O3 + temperature, data = belfastdata)
 modelO3 <- lm(O3~PM2.5 + NO2 + humidity + temperature, data = belfastdata)
-# modeltemperature <- lm(humidity~PM2.5 + NO2 + O3 + humidity, data = belfastdata)
 
-# Show the model.
-# print(model)
-# Get the Intercept and coefficients as vector elements.
-# cat("# # # # The Coefficient Values # # # ", "\n")
-a <- coef(model)[1]
-# print(a)
-
-XPM2.5 <- coef(model)[2]
-XNO2 <- coef(model)[3]
-XO3 <- coef(model)[4]
-Xtemperature <- coef(model)[5]
-
-# print(XPM2.5)
-# print(XNO2)
-# print(XO3)
-# print(Xtemperature)
-
-# Y = a+XPM2.5.x1+XNO2.x2+XO3.x3+Xtemperature.x4
-
+# Oveall view method
+# --------------------------------------------------------------------------------
+library(car)
 states <- as.data.frame(belfastdata[,c('PM2.5','NO2','O3','temperature','humidity')])
 cor(states)#查看变量相关系数
-library(car)
 pdf("D:/Rstudio4.1.2/workspace/overall.pdf",width=4,height=4)
-scatterplotMatrix(states,spread=FALSE)  
+scatterplotMatrix(states,spread = FALSE)  
 dev.off()
 
-# library(leaps)
-# leaps<-regsubsets(humidity~PM2.5 + NO2 + O3 + temperature, data = belfastdata,nbest = 4)
-# pdf("D:/Rstudio4.1.2/workspace/adjr2 humidity.pdf",width=8,height=8)
-# plot(leaps,scale = 'adjr2') 
-# dev.off()
+# # adjr2 method
+# # --------------------------------------------------------------------------------
+library(leaps)
 
-leaps<-regsubsets(PM2.5~humidity + NO2 + O3 + temperature, data = belfastdata,nbest = 4)
+leaps <- regsubsets(PM2.5~humidity + NO2 + O3 + temperature, data = belfastdata,nbest = 4)
 pdf("D:/Rstudio4.1.2/workspace/adjr2 PM2.5.pdf",width=8,height=8)
 plot(leaps,scale = 'adjr2') 
 dev.off()
 
-leaps<-regsubsets(NO2~humidity + PM2.5 + O3 + temperature, data = belfastdata,nbest = 4)
+leaps <- regsubsets(NO2~humidity + PM2.5 + O3 + temperature, data = belfastdata,nbest = 4)
 pdf("D:/Rstudio4.1.2/workspace/adjr2 NO2.pdf",width=8,height=8)
 plot(leaps,scale = 'adjr2') 
 dev.off()
 
-leaps<-regsubsets(O3~humidity + PM2.5 + NO2 + temperature, data = belfastdata,nbest = 4)
+leaps <- regsubsets(O3~humidity + PM2.5 + NO2 + temperature, data = belfastdata,nbest = 4)
 pdf("D:/Rstudio4.1.2/workspace/adjr2 O3.pdf",width=8,height=8)
 plot(leaps,scale = 'adjr2') 
 dev.off()
 
-# leaps<-regsubsets(temperature~humidity + PM2.5 + NO2 + O3, data = belfastdata,nbest = 4)
-# pdf("D:/Rstudio4.1.2/workspace/adjr2 temperature.pdf",width=8,height=8)
-# plot(leaps,scale = 'adjr2') 
-# dev.off()
-
+# # qqplot method
+# # --------------------------------------------------------------------------------
 pdf("D:/Rstudio4.1.2/workspace/qqplotPM2.5.pdf",width=8,height=8)
 qqPlot(modelPM2.5,labels = row.names(states),id.method = 'identify',simulate = T)
 dev.off()
@@ -71,3 +47,25 @@ dev.off()
 pdf("D:/Rstudio4.1.2/workspace/qqplotO3.pdf",width=8,height=8)
 qqPlot(modelO3,labels = row.names(states),id.method = 'identify',simulate = T)
 dev.off()
+
+# box plots
+# --------------------------------------------------------------------------------
+library(tidyverse)
+library(ggplot2)
+library(reshape2)
+library(RColorBrewer)
+library(ggpubr)
+
+box <- melt(belfastdata)
+ggplot(box,aes(x=variable,y=value,color=variable))+
+geom_boxplot(aes(fill=factor(variable)))
+theme(axis.text.x=element_text(angle=50,hjust=0.5, vjust=0.5)) +
+theme(legend.position="none")
+ggsave(filename="D:/Rstudio4.1.2/workspace/overallbox.pdf",width=12,height=9)
+
+
+# preboxPM2.5 <- melt(boxdata)
+# boxPM2.5 <- preboxPM2.5[,'PM2.5']
+# ggplot(boxPM2.5,aes(x=variable,y=value))+
+# geom_boxplot()
+# ggsave(filename="D:/Rstudio4.1.2/workspace/boxPM2.5.pdf",width=12,height=9)
