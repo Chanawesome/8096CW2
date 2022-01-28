@@ -1,5 +1,5 @@
 # 8096CW2
-GROUP TASK CW2 (25 Per Cent of total marks)- Report Deadline. Exact date in Canvas. 
+TASK CW2 (25 Per Cent of total marks)- Report Deadline. Exact date in Canvas. 
 
 Teams and Tasks overview:
 Your team consist of 5 or 6 members. You should have regular weekly meetings with your team members via MS Teams software.
